@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Checkout Rápido DeoBeauty</title>
+<meta name="description" content="Protótipo navegável do checkout rápido (sem cadastro) da DeoBeauty: sacola, contato, entrega, pagamento com Pix, cartão ou carteira digital e pedido confirmado.">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="robots" content="noindex">
+<!-- base da página: o mesmo esqueleto que o protótipo usa na publicação (área segura do celular e [hidden]) -->
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Playfair+Display:wght@400;600&display=swap">
+<link rel="stylesheet" href="css/app.css">
+<link rel="stylesheet" href="css/sacola.css">
+<link rel="stylesheet" href="css/volta.css">
+<link rel="stylesheet" href="css/pix.css">
+<link rel="stylesheet" href="css/confirmacao.css">
+<link rel="stylesheet" href="css/movimento.css">
+<link rel="stylesheet" href="css/falha.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+<symbol id="i-cadeado" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a5 5 0 0 1 5 5v3h1a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h1V7a5 5 0 0 1 5-5Zm0 2a3 3 0 0 0-3 3v3h6V7a3 3 0 0 0-3-3Zm0 9a1.6 1.6 0 0 0-1 2.85V18h2v-2.15A1.6 1.6 0 0 0 12 13Z"/></symbol>
+<symbol id="i-seta" viewBox="0 0 24 24"><path fill="currentColor" d="M5.3 8.3 12 15l6.7-6.7 1.4 1.4L12 17.8 3.9 9.7Z"/></symbol>
+<symbol id="i-ok" viewBox="0 0 24 24"><path d="M9.5 16.2 19.7 6l1.6 1.6L9.5 19.4 2.7 12.6l1.6-1.6Z"/></symbol>
+<symbol id="i-pino" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7Zm0 4.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5Z"/></symbol>
+<symbol id="i-pix" viewBox="0 0 24 24"><path fill="#32BCAD" d="M17.6 17.2a2.9 2.9 0 0 1-2.1-.9l-3-3a.6.6 0 0 0-.8 0l-3.1 3.1a2.9 2.9 0 0 1-2.1.9h-.6l3.9 3.9a3.1 3.1 0 0 0 4.4 0l3.9-3.9ZM6.5 6.8a2.9 2.9 0 0 1 2.1.9l3.1 3.1a.6.6 0 0 0 .8 0l3-3a2.9 2.9 0 0 1 2.1-.9h.4l-3.9-3.9a3.1 3.1 0 0 0-4.4 0L5.8 6.8Zm14.6 3-2.4-2.4h-1.1a2 2 0 0 0-1.4.6l-3 3a1.4 1.4 0 0 1-2 0L8.1 7.9a2 2 0 0 0-1.4-.6H5.3L2.9 9.8a3.1 3.1 0 0 0 0 4.4l2.4 2.4h1.4a2 2 0 0 0 1.4-.6l3.1-3.1a1.4 1.4 0 0 1 2 0l3 3a2 2 0 0 0 1.4.6h1.1l2.4-2.4a3.1 3.1 0 0 0 0-4.3Z"/></symbol>
+<symbol id="i-cartao" viewBox="0 0 24 24"><path fill="currentColor" d="M3 5h18a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Zm0 2v2h18V7Zm0 5v5h18v-5Zm2 2h6v1.6H5Z"/></symbol>
+<symbol id="i-troca" viewBox="0 0 24 24"><path fill="currentColor" d="M16 3l5 5-5 5-1.4-1.4L17.2 9H4V7h13.2l-2.6-2.6Zm-8 8 1.4 1.4L6.8 15H20v2H6.8l2.6 2.6L8 21l-5-5Z"/></symbol>
+<symbol id="i-selo" viewBox="0 0 24 24"><path fill="#2E7D4F" d="M12 1.5 14.6 4l3.6-.4.6 3.5 3.1 1.9-1.4 3.3 1.4 3.3-3.1 1.9-.6 3.5-3.6-.4L12 22.5 9.4 20l-3.6.4-.6-3.5-3.1-1.9 1.4-3.3-1.4-3.3 3.1-1.9.6-3.5 3.6.4Z"/><path fill="#fff" d="m10.6 15.6-3.3-3.3 1.4-1.4 1.9 1.9 4.6-4.6 1.4 1.4Z"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path fill="currentColor" d="m6.4 5 5.6 5.6L17.6 5 19 6.4 13.4 12l5.6 5.6-1.4 1.4-5.6-5.6L6.4 19 5 17.6l5.6-5.6L5 6.4Z"/></symbol>
+<symbol id="i-info" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20Zm-1 8v7h2v-7Zm0-4v2h2V6Z"/></symbol>
+</defs></svg>
+
+<!-- fundo da loja (só no modo janela) -->
+<div class="loja-fundo" aria-hidden="true">
+  <div class="lf-barra">Frete grátis SP capital acima de R$ 199</div>
+  <div class="lf-topo"><img src="img/logo.webp" alt=""><span>Kits</span><span>Body splash</span><span>Perfumes</span></div>
+  <div class="lf-grade">
+    <div class="lf-card"><img src="img/oud-passion.webp" alt=""><i></i><i></i></div>
+    <div class="lf-card"><img src="img/sweet-petals-bs.webp" alt=""><i></i><i></i></div>
+    <div class="lf-card"><img src="img/oud-passion.webp" alt=""><i></i><i></i></div>
+    <div class="lf-card"><img src="img/sweet-petals-bs.webp" alt=""><i></i><i></i></div>
+    <div class="lf-card"><img src="img/oud-passion.webp" alt=""><i></i><i></i></div>
+    <div class="lf-card"><img src="img/sweet-petals-bs.webp" alt=""><i></i><i></i></div>
+  </div>
+</div>
+
+<header class="topo">
+  <div class="topo-in">
+    <a href="https://deobeauty.me/" target="_blank" rel="noopener" aria-label="DeoBeauty, voltar à loja" data-loja><img class="logo" src="img/logo.webp" alt="DeoBeauty" width="120" height="27"></a>
+    <a class="topo-volta" href="https://deobeauty.me/" target="_blank" rel="noopener" data-loja>Voltar à loja</a>
+    <p class="topo-seg"><svg aria-hidden="true"><use href="#i-cadeado"/></svg>Compra segura</p>
+  </div>
+</header>
+
+<div class="corpo" id="corpo">
+  <div class="janela-cab"><h1 id="titulo-pagina">Finalizar compra</h1><button type="button" aria-label="Fechar"><svg aria-hidden="true"><use href="#i-x"/></svg></button></div>
+
+  <main class="fluxo" id="fluxo">
+    <h1 class="vh titulo-checkout">Finalizar compra</h1>
+    <nav class="progresso" aria-label="Etapas da compra">
+      <ol class="prog-lista" id="prog">
+        <li class="prog-item atual" data-p="1" aria-current="step">Contato</li>
+        <li class="prog-item" data-p="2">Entrega</li>
+        <li class="prog-item" data-p="3">Pagamento</li>
+      </ol>
+    </nav>
+
+    <form class="form" id="form" novalidate>
+
+      <!-- ETAPA 1 · CONTATO -->
+      <div class="feita" id="feita-1" hidden><span class="feita-ic"><svg aria-hidden="true"><use href="#i-ok"/></svg></span><p class="feita-tx"><b>Contato<span class="vh">, etapa concluída</span></b><span id="feita-1-tx"></span></p><button type="button" class="feita-alt" data-ir="1">Alterar<span class="vh"> contato</span></button></div>
+      <section class="etapa" data-etapa="1" id="etapa-1" aria-labelledby="t1">
+        <div class="etapa-cab">
+          <p class="etapa-num">Etapa 1 de 3</p>
+          <h2 id="t1" tabindex="-1">Como a gente fala com você?</h2>
+          <p class="etapa-sub">Só o essencial, sem cadastro e sem senha.</p>
+        </div>
+        <div class="etapa-corpo">
+          <div class="campo">
+            <div class="flut"><input class="entrada" id="nome" name="nome" autocomplete="name" autocapitalize="words" placeholder=" " aria-describedby="nome-erro"><label for="nome">Nome e sobrenome</label></div>
+            <p class="erro" id="nome-erro" hidden></p>
+          </div>
+          <div class="campo">
+            <div class="flut"><input class="entrada num" id="whats" name="whats" type="tel" inputmode="tel" autocomplete="tel-national" placeholder=" " aria-describedby="whats-ajuda whats-erro"><label for="whats">WhatsApp</label></div>
+            <p class="ajuda" id="whats-ajuda">É por onde chegam a confirmação e o rastreio do pedido. Ex.:&nbsp;<span class="nq">(11) 91234-5678</span></p>
+            <p class="dica-ok" id="whats-ok" hidden><svg aria-hidden="true"><use href="#i-ok"/></svg><span>Combinado, a gente fala com você pelo WhatsApp.</span></p>
+            <p class="erro" id="whats-erro" hidden></p>
+          </div>
+          <div class="slot" id="slot-contato"></div>
+          <div class="campo" id="campo-email">
+            <div class="flut"><input class="entrada" id="email" name="email" type="email" inputmode="email" autocomplete="email" spellcheck="false" placeholder=" " aria-describedby="email-ajuda email-erro"><label for="email">E-mail <span class="rot-op">(opcional)</span></label></div>
+            <p class="ajuda" id="email-ajuda">Para receber o recibo do pedido.</p>
+            <p class="erro" id="email-erro" hidden></p>
+          </div>
+        </div>
+        <div class="etapa-acoes">
+          <button type="button" class="resumo-pe" aria-expanded="false" aria-controls="pedido"><span class="rb-fotos" aria-hidden="true"></span><span class="rb-tx">Resumo<span class="rb-do"> do pedido</span><span class="vh rb-itens">, 2 itens</span></span><svg aria-hidden="true"><use href="#i-seta"/></svg><span class="rb-tot num">R$&nbsp;149,80</span></button>
+          <button type="submit" class="btn btn-pri" data-avancar="1">Continuar para a entrega</button>
+        </div>
+      </section>
+
+      <!-- ETAPA 2 · ENTREGA -->
+      <div class="feita" id="feita-2" hidden><span class="feita-ic"><svg aria-hidden="true"><use href="#i-ok"/></svg></span><p class="feita-tx"><b>Entrega<span class="vh">, etapa concluída</span></b><span id="feita-2-tx"></span></p><button type="button" class="feita-alt" data-ir="2">Alterar<span class="vh"> entrega</span></button></div>
+      <section class="etapa" data-etapa="2" id="etapa-2" aria-labelledby="t2" hidden>
+        <div class="etapa-cab">
+          <p class="etapa-num">Etapa 2 de 3</p>
+          <h2 id="t2" tabindex="-1">Onde seu pedido vai chegar?</h2>
+          <p class="etapa-sub">Digite o CEP e a gente acha seu endereço.</p>
+        </div>
+        <div class="etapa-corpo">
+          <div class="campo">
+            <div class="flut"><input class="entrada num" id="cep" name="cep" autocomplete="postal-code" inputmode="numeric" maxlength="9" placeholder=" " aria-describedby="cep-erro"><label for="cep">CEP</label></div>
+            <p class="carregando" id="cep-busca" hidden><i aria-hidden="true"></i>Buscando o endereço…</p>
+            <p class="erro" id="cep-erro" hidden></p>
+            <a class="link" href="https://buscacepinter.correios.com.br/app/endereco/index.php" target="_blank" rel="noopener">Não sei meu CEP</a>
+          </div>
+
+          <div class="endereco" id="endereco" hidden aria-live="polite"><svg aria-hidden="true"><use href="#i-pino"/></svg><p><b id="end-rua"></b><span id="end-local"></span></p></div>
+
+          <div class="manual" id="manual" hidden>
+            <p class="ajuda">Não achamos a rua deste CEP. Complete o endereço abaixo.</p>
+            <div class="campo"><div class="flut"><input class="entrada" id="rua" name="rua" autocomplete="address-line1" placeholder=" " aria-describedby="rua-erro"><label for="rua">Rua ou avenida</label></div><p class="erro" id="rua-erro" hidden></p></div>
+            <div class="campo"><div class="flut"><input class="entrada" id="bairro" name="bairro" autocomplete="address-level3" placeholder=" " aria-describedby="bairro-erro"><label for="bairro">Bairro</label></div><p class="erro" id="bairro-erro" hidden></p></div>
+            <div class="linha">
+              <div class="campo"><div class="flut"><input class="entrada" id="cidade" name="cidade" autocomplete="address-level2" placeholder=" " aria-describedby="cidade-erro"><label for="cidade">Cidade</label></div><p class="erro" id="cidade-erro" hidden></p></div>
+              <div class="campo"><div class="flut flut-lista"><select class="entrada" id="uf" name="uf" autocomplete="address-level1" aria-describedby="uf-erro"></select><label for="uf">Estado</label></div><p class="erro" id="uf-erro" hidden></p></div>
+            </div>
+          </div>
+
+          <div id="bloco-entrega" hidden>
+            <div class="etapa-corpo">
+              <div class="linha-num">
+                <div class="campo"><div class="flut"><input class="entrada num" id="numero" name="numero" inputmode="numeric" autocomplete="off" placeholder=" " aria-describedby="numero-erro"><label for="numero">Número</label></div></div>
+                <label class="marca"><input type="checkbox" id="sem-numero"> Sem número</label>
+              </div>
+              <p class="erro" id="numero-erro" hidden></p>
+              <div class="campo"><div class="flut"><input class="entrada" id="complemento" name="complemento" autocomplete="address-line2" placeholder=" " aria-describedby="complemento-ajuda"><label for="complemento">Complemento <span class="rot-op">(opcional)</span></label></div><p class="ajuda" id="complemento-ajuda">Apartamento, bloco ou o que ajudar a achar sua porta.</p></div>
+              <div class="campo">
+                <div class="cab-campo"><span class="rot">Quem vai receber</span><button type="button" class="link" id="outro-recebe" aria-expanded="false" aria-controls="campo-recebe">Outra pessoa</button></div>
+                <p class="ajuda" id="recebe-tx"></p>
+                <div class="campo" id="campo-recebe" hidden><div class="flut"><input class="entrada" id="recebe" name="recebe" autocomplete="off" placeholder=" " aria-describedby="recebe-erro"><label for="recebe">Nome e sobrenome de quem vai receber</label></div><p class="erro" id="recebe-erro" hidden></p></div>
+              </div>
+              <fieldset class="opcoes" id="fretes">
+                <legend>Frete</legend>
+              </fieldset>
+            </div>
+          </div>
+        </div>
+        <div class="etapa-acoes">
+          <button type="button" class="resumo-pe" aria-expanded="false" aria-controls="pedido"><span class="rb-fotos" aria-hidden="true"></span><span class="rb-tx">Resumo<span class="rb-do"> do pedido</span><span class="vh rb-itens">, 2 itens</span></span><svg aria-hidden="true"><use href="#i-seta"/></svg><span class="rb-tot num">R$&nbsp;149,80</span></button>
+          <button type="submit" class="btn btn-pri" data-avancar="2">Continuar para o pagamento</button>
+        </div>
+      </section>
+
+      <!-- ETAPA 3 · PAGAMENTO -->
+      <section class="etapa" data-etapa="3" id="etapa-3" aria-labelledby="t3" hidden>
+        <div class="etapa-cab">
+          <p class="etapa-num">Etapa 3 de 3</p>
+          <h2 id="t3" tabindex="-1">Falta pouco para ser seu</h2>
+          <p class="etapa-sub">Escolha como pagar, sem sair da página.</p>
+        </div>
+        <div class="etapa-corpo">
+          <div class="slot" id="slot-pagamento-topo"></div>
+          <fieldset class="opcoes" id="pagamentos">
+            <legend class="vh">Forma de pagamento</legend>
+            <label class="opcao"><input type="radio" name="pag" value="pix" checked><span class="opcao-t"><svg class="pag-ic" aria-hidden="true"><use href="#i-pix"/></svg><span>Pix</span></span><span class="opcao-d">Aprovação na hora</span><span class="opcao-v num" id="pag-pix-v"></span></label>
+            <label class="opcao"><input type="radio" name="pag" value="cartao"><span class="opcao-t"><svg class="pag-ic" aria-hidden="true"><use href="#i-cartao"/></svg><span>Cartão de crédito</span></span><span class="opcao-d">Em até 6x sem juros</span><span class="opcao-v num" id="pag-cartao-v"></span></label>
+            <label class="opcao" id="pag-cart" hidden><input type="radio" name="pag" value="carteira"><span class="opcao-t"><span class="marca-cart" id="cart-marca">Apple Pay</span></span><span class="opcao-d">Sem digitar o cartão</span><span class="opcao-v num" id="pag-cart-v"></span></label>
+          </fieldset>
+
+          <div class="pix-info" id="pix-info"><svg aria-hidden="true"><use href="#i-info"/></svg><p>Em seguida aparece o código Pix para copiar e colar no app do banco. Assim que o Pix cair, seu pedido está confirmado.</p></div>
+          <div class="pix-info" id="cart-info" hidden><svg aria-hidden="true"><use href="#i-info"/></svg><p id="cart-info-tx"></p></div>
+
+          <div class="cartao" id="cartao" hidden>
+            <div class="campo"><div class="num-cartao flut"><input class="entrada num" id="cc-num" name="cc-num" inputmode="numeric" autocomplete="cc-number" maxlength="23" placeholder=" " aria-describedby="cc-num-erro"><label for="cc-num">Número do cartão</label><span class="bandeira" id="cc-band" aria-live="polite"></span></div><p class="erro" id="cc-num-erro" hidden></p></div>
+            <div class="linha">
+              <div class="campo"><div class="flut"><input class="entrada num" id="cc-val" name="cc-val" inputmode="numeric" autocomplete="cc-exp" maxlength="5" placeholder=" " aria-describedby="cc-val-ajuda cc-val-erro"><label for="cc-val">Validade</label></div><p class="ajuda" id="cc-val-ajuda">Mês e ano, como 08/29</p><p class="erro" id="cc-val-erro" hidden></p></div>
+              <div class="campo"><div class="flut"><input class="entrada num" id="cc-cvv" name="cc-cvv" inputmode="numeric" autocomplete="cc-csc" maxlength="4" placeholder=" " aria-describedby="cc-cvv-ajuda cc-cvv-erro"><label for="cc-cvv">CVV</label></div><p class="ajuda" id="cc-cvv-ajuda">3 ou 4 números no verso</p><p class="erro" id="cc-cvv-erro" hidden></p></div>
+            </div>
+            <div class="campo"><div class="flut"><input class="entrada" id="cc-nome" name="cc-nome" autocomplete="cc-name" autocapitalize="characters" placeholder=" " aria-describedby="cc-nome-erro"><label for="cc-nome">Nome impresso no cartão</label></div><p class="erro" id="cc-nome-erro" hidden></p></div>
+            <div class="campo"><div class="flut flut-lista"><select class="entrada num" id="parcelas" name="parcelas"></select><label for="parcelas">Parcelas</label></div></div>
+            <label class="marca"><input type="checkbox" id="fatura-igual" checked aria-controls="fatura"> O endereço da fatura é o mesmo da entrega</label>
+            <div class="fatura" id="fatura" hidden>
+              <div class="campo"><div class="flut"><input class="entrada num" id="fat-cep" name="fat-cep" autocomplete="billing postal-code" inputmode="numeric" maxlength="9" placeholder=" " aria-describedby="fat-cep-erro"><label for="fat-cep">CEP da fatura</label></div><p class="erro" id="fat-cep-erro" hidden></p></div>
+              <div class="campo"><div class="flut"><input class="entrada" id="fat-rua" name="fat-rua" autocomplete="billing address-line1" placeholder=" " aria-describedby="fat-rua-ajuda fat-rua-erro"><label for="fat-rua">Rua e número</label></div><p class="ajuda" id="fat-rua-ajuda">Ex.:&nbsp;Avenida Paulista, 1000</p><p class="erro" id="fat-rua-erro" hidden></p></div>
+              <div class="linha">
+                <div class="campo"><div class="flut"><input class="entrada" id="fat-cidade" name="fat-cidade" autocomplete="billing address-level2" placeholder=" " aria-describedby="fat-cidade-erro"><label for="fat-cidade">Cidade</label></div><p class="erro" id="fat-cidade-erro" hidden></p></div>
+                <div class="campo"><div class="flut flut-lista"><select class="entrada" id="fat-uf" name="fat-uf" autocomplete="billing address-level1" aria-describedby="fat-uf-erro"></select><label for="fat-uf">Estado</label></div><p class="erro" id="fat-uf-erro" hidden></p></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="campo" id="campo-cpf">
+            <div class="flut"><input class="entrada num" id="cpf" name="cpf" inputmode="numeric" autocomplete="off" maxlength="14" placeholder=" " aria-describedby="cpf-ajuda cpf-erro"><label for="cpf">CPF</label></div>
+            <p class="ajuda" id="cpf-ajuda">Ele vai na nota fiscal do seu pedido. Ex.:&nbsp;123.456.789-09</p>
+            <p class="erro" id="cpf-erro" hidden></p>
+          </div>
+          <div class="slot" id="slot-pagamento-fim"></div>
+        </div>
+        <div class="etapa-acoes">
+          <button type="button" class="resumo-pe" aria-expanded="false" aria-controls="pedido"><span class="rb-fotos" aria-hidden="true"></span><span class="rb-tx">Resumo<span class="rb-do"> do pedido</span><span class="vh rb-itens">, 2 itens</span></span><svg aria-hidden="true"><use href="#i-seta"/></svg><span class="rb-tot num">R$&nbsp;149,80</span></button>
+          <button type="submit" class="btn btn-pri" data-avancar="3" id="btn-pagar"><svg aria-hidden="true"><use href="#i-cadeado"/></svg><span id="btn-pagar-tx">Pagar com Pix</span></button>
+          <button type="submit" class="xp-btn" data-avancar="3" id="btn-carteira" hidden>Pagar com <b id="cart-btn-nome">Apple Pay</b></button>
+          <p class="seguro"><svg aria-hidden="true"><use href="#i-cadeado"/></svg>Pagamento em ambiente seguro</p>
+        </div>
+      </section>
+    </form>
+  </main>
+
+  <aside class="pedido recolhido" id="pedido" aria-labelledby="pedido-titulo">
+    <button type="button" class="resumo-bar" id="resumo-bar" aria-expanded="false" aria-controls="pedido-in">
+      <span class="rb-tx">Resumo do pedido <small class="rb-itens-v">2 itens</small></span>
+      <span class="rb-tot num">R$&nbsp;149,80</span>
+      <svg aria-hidden="true"><use href="#i-seta"/></svg>
+    </button>
+    <div class="pedido-in" id="pedido-in">
+      <div class="ped-cab"><h2 id="pedido-titulo" tabindex="-1">Seu pedido</h2><button type="button" class="ped-fechar" id="ped-fechar" aria-label="Fechar resumo"><svg aria-hidden="true"><use href="#i-x"/></svg></button></div>
+      <ul class="itens" id="itens"></ul>
+
+      <div class="meta-frete" id="meta-frete" hidden>
+        <span id="meta-frete-tx"></span>
+        <span class="trilho" aria-hidden="true"><i id="meta-frete-barra"></i></span>
+      </div>
+
+      <div class="cupom">
+        <button type="button" class="link" id="cupom-abrir" aria-expanded="false" aria-controls="cupom-form">Tenho um cupom</button>
+        <div class="cupom-form" id="cupom-form" hidden>
+          <div class="flut"><input class="entrada" id="cupom" name="cupom" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder=" " aria-describedby="cupom-erro"><label for="cupom">Código do cupom</label></div>
+          <button type="button" class="btn btn-sec" id="cupom-aplicar">Aplicar</button>
+        </div>
+        <p class="erro" id="cupom-erro" hidden></p>
+        <div class="cupom-ok" id="cupom-ok" hidden><span class="tag-cupom" id="cupom-tag"></span><button type="button" class="link" id="cupom-tirar">Remover<span class="vh"> cupom</span></button></div>
+        <p class="vh" id="cupom-aviso" role="status"></p>
+      </div>
+
+      <dl class="contas num">
+        <div><dt>Subtotal</dt><dd id="v-sub">R$&nbsp;149,80</dd></div>
+        <div class="desc" id="linha-desc" hidden><dt>Desconto</dt><dd id="v-desc"></dd></div>
+        <div><dt>Frete</dt><dd id="v-frete">Calculado após o CEP</dd></div>
+      </dl>
+      <div class="total num"><span>Total</span><b id="v-total">R$&nbsp;149,80</b></div>
+      <p class="parcela num" id="v-parcela">ou 6x de R$&nbsp;24,97 sem juros</p>
+
+      <ul class="confianca">
+        <li><svg aria-hidden="true"><use href="#i-selo"/></svg><span>Reputação <b>RA 1000</b> no Reclame Aqui</span></li>
+        <li><svg aria-hidden="true"><use href="#i-troca"/></svg><span>Troca fácil em até 7 dias depois de receber</span></li>
+        <li><svg aria-hidden="true"><use href="#i-cadeado"/></svg><span>Pagamento em ambiente seguro</span></li>
+      </ul>
+    </div>
+  </aside>
+</div>
+<div class="veu" id="veu" hidden></div>
+
+
+<script src="js/app.js"></script>
+<script src="js/sacola.js"></script>
+<script src="js/volta.js"></script>
+<script src="js/pix.js"></script>
+<script src="js/confirmacao.js"></script>
+<script src="js/movimento.js"></script>
+<script src="js/pagamento.js"></script>
+</body>
+</html>

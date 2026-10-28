@@ -1,0 +1,15 @@
+# saída dos testes e capturas (testes/README.md)
+saida-testes/
+
+# Python e Node
+__pycache__/
+*.pyc
+node_modules/
+
+# fontes locais para rodar os testes sem internet (cada pessoa baixa as suas)
+testes/fontes/gfonts.css
+testes/fontes/*.woff2
+
+# sistema
+.DS_Store
+Thumbs.db
