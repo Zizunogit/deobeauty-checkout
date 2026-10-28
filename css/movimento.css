@@ -1,0 +1,17 @@
+/* DeoBeauty · Checkout rápido · v3 · módulo pagamento · movimento da aprovação (r2-d7 B)
+   Peças que só existem durante a passagem (movimento.js cria e tira). Só transform e opacity.
+   Nada daqui aparece com "reduzir movimento": o movimento.js nem cria as peças. */
+
+/* camada por cima da página, sem toque e fora do leitor de tela: a cópia da tela que sai e o anel */
+.mv-voo{position:fixed;inset:0;z-index:2;overflow:hidden;pointer-events:none}
+.mv-voo .mv-copia{position:absolute}
+.mv-voo .px-ponto::after{animation:none}
+
+/* o selo em voo passa por cima do conteúdo que ainda está entrando */
+.mv-voando{z-index:3}
+/* cor de partida (rosa do pontinho ou do botão, preto da carteira) que se apaga e deixa o verde */
+.mv-cor{position:absolute;inset:0;border-radius:50%}
+/* véu verde que corre para a direita e revela o ✓ */
+.mv-veu{position:absolute;inset:0;background:var(--ok);transform:translateX(101%)}
+/* anel que sai do selo uma vez */
+.mv-anel{position:absolute;border-radius:50%;border:2px solid var(--ok);opacity:0}

@@ -1,0 +1,84 @@
+/* DeoBeauty · Checkout rápido · v3 · módulo pagamento · pedido confirmado (r2-d2 C)
+   Mesma grade do checkout: à esquerda título, aviso do WhatsApp e linha do tempo de 4 passos;
+   à direita (embaixo, no celular), a coluna creme "Seu pedido" (sem família olfativa, r2-d6 A).
+   Linha do tempo: feito = círculo verde com ✓; próximo = anel rosa; depois = anel na cor da borda. */
+
+/* ---------- o que é do checkout sai de cena ---------- */
+html[data-tela="confirmacao"] #fluxo>.progresso,
+html[data-tela="confirmacao"] #form,
+html[data-tela="confirmacao"] #pedido,
+html[data-tela="confirmacao"] .topo-seg{display:none}
+html:not([data-tela="confirmacao"]) #ok{display:none}
+@media (min-width:1024px){
+  html[data-tela="confirmacao"] #corpo{grid-template-columns:minmax(0,1064px)}
+}
+
+.ok{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--e5);padding:var(--e3) 0 var(--e6)}
+.ok a.btn{text-decoration:none}
+.ok-col{display:flex;flex-direction:column;gap:var(--e5);min-width:0}
+
+/* cabeça: selo "✓ Pedido #1043", título, frase */
+.ok-cab{display:flex;flex-direction:column;gap:var(--e2)}
+.ok-kicker{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--texto-2)}
+.ok-num{display:block}
+/* o selo é a peça em que o pontinho do Pix (ou o botão) se transforma no movimento r2-d7 B */
+.ok-selo{position:relative;flex:none;width:24px;height:24px;border-radius:50%;background:var(--ok);display:grid;place-items:center;overflow:hidden}
+.ok-selo svg{position:relative;width:15px;height:15px;fill:#fff}
+.ok-cab h1{font-family:var(--f-titulo);font-weight:400;font-size:30px;line-height:1.15;letter-spacing:-.01em;text-wrap:balance}
+.ok-lead{font-size:16px;color:var(--texto-2);text-wrap:pretty}
+
+/* aviso do WhatsApp em destaque */
+.ok-zap{display:flex;gap:var(--e3);padding:var(--e4);border-radius:var(--raio-c);background:var(--creme);font-size:15px;line-height:1.45}
+.ok-zap-ic{flex:none;width:40px;height:40px;border-radius:50%;background:var(--ok);color:#fff;display:grid;place-items:center}
+.ok-zap-ic svg{width:20px;height:20px}
+.ok-zap b{font-size:16px}
+.ok-zap-mail{font-size:14px;color:var(--texto-2);margin-top:4px;overflow-wrap:anywhere}
+
+/* linha do tempo */
+.ok-tempo h2{font-family:var(--f-titulo);font-weight:400;font-size:22px;line-height:1.2;margin-bottom:var(--e4)}
+.ok-linha{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.ok-passo{position:relative;display:grid;grid-template-columns:24px minmax(0,1fr);column-gap:var(--e3);padding-bottom:var(--e5)}
+.ok-passo:last-child{padding-bottom:0}
+.ok-passo:not(:last-child)::before{content:"";position:absolute;left:11px;top:28px;bottom:4px;width:2px;border-radius:1px;background:var(--borda)}
+.ok-passo.ok-feito:not(:last-child)::before{background:var(--ok)}
+.ok-marca{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--fundo);border:2px solid var(--borda-forte)}
+.ok-feito .ok-marca{background:var(--ok);border-color:var(--ok)}
+.ok-feito .ok-marca svg{width:15px;height:15px;fill:#fff}
+.ok-agora .ok-marca{border-color:var(--rose);box-shadow:inset 0 0 0 4px var(--fundo);background:var(--rose)}
+.ok-passo-tx{display:flex;flex-direction:column;gap:2px;padding-top:1px;min-width:0;font-size:14px;line-height:1.45;color:var(--texto-2);overflow-wrap:anywhere}
+.ok-passo-tx h3{display:flex;flex-wrap:wrap;align-items:center;column-gap:8px;row-gap:4px;font-size:16px;font-weight:700;line-height:1.35;color:var(--tinta)}
+.ok-agora-tag{font-size:11px}
+.ok-passo-tx .ok-prev{font-weight:700;color:var(--tinta)}
+
+/* "Seu pedido": a mesma sacola creme do checkout */
+.ok-ped{display:flex;flex-direction:column;gap:var(--e4);padding:var(--e5) var(--e4);border-radius:var(--raio);background:var(--creme);min-width:0}
+.ok-ped h2{font-family:var(--f-titulo);font-weight:400;font-size:22px;line-height:1.2}
+.ok-ped .contas{padding-top:var(--e4);border-top:1px solid var(--borda)}
+.ok-ped .total{padding-top:var(--e3);border-top:1px solid var(--borda)}
+.ok-pago{font-size:14px;font-weight:500;margin-top:-6px;text-wrap:pretty}
+.ok-nota{font-size:13px;color:var(--texto-2);margin-top:-10px}
+.ok-ped .confianca{padding-top:var(--e4);border-top:1px solid var(--borda)}
+
+.ok-acoes{display:flex;flex-direction:column;align-items:stretch;gap:var(--e2)}
+.ok-acoes .link{align-self:center;text-align:center}
+
+/* só no protótipo (v3.1): recomeçar o fluxo. Mesmo desenho do "Simular Pix recebido" (.px-demo, pix.css) */
+.ok-demo{display:flex;justify-content:center}
+.ok-demo-bt{display:inline-flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:0 6px;min-height:48px;padding:6px 16px;border:1px dashed var(--texto-2);border-radius:var(--raio-p);background:var(--fundo);font-size:14px;line-height:1.35;text-align:center;color:var(--tinta)}
+.ok-demo-bt b{font-weight:700}
+.ok-demo-bt span{color:var(--texto-2)}
+.ok-demo-bt:hover{border-style:solid}
+
+@media (min-width:1024px){
+  .ok{padding-top:var(--e2)}
+  .ok-cab h1{font-size:36px}
+}
+/* computador (fora do modo janela): coluna de conteúdo + coluna creme, como no checkout */
+@media (min-width:1024px){
+  html:not([data-modo="janela"]) .ok{grid-template-columns:minmax(0,600px) 400px;justify-content:center;column-gap:64px;row-gap:var(--e5);align-items:start}
+  html:not([data-modo="janela"]) .ok-col{grid-column:1;grid-row:1}
+  html:not([data-modo="janela"]) .ok-ped{grid-column:2;grid-row:1 / span 2;position:sticky;top:var(--e5);padding:var(--e5)}
+  html:not([data-modo="janela"]) .ok-acoes{grid-column:1;grid-row:2;flex-direction:row;align-items:center;gap:var(--e5)}
+  html:not([data-modo="janela"]) .ok-acoes .btn{width:auto;min-width:280px}
+  html:not([data-modo="janela"]) .ok-demo{grid-column:1;grid-row:3;justify-content:flex-start}
+}

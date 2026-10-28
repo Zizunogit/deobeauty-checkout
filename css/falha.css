@@ -1,0 +1,32 @@
+/* DeoBeauty · Checkout rápido · v3 · módulo pagamento · pagamento que não passou (r2-d5 A)
+   Um aviso só para "o pagamento não passou": cartão recusado (no começo da etapa 3, #slot-pagamento-topo)
+   e código Pix vencido (na tela do Pix). Ícone e título na cor de erro, nunca no rosa de ação;
+   o vermelho fica num bloco só e a opção do cartão não fica vermelha (ninguém lê como "você errou"). */
+.er-aviso{display:grid;grid-template-columns:24px minmax(0,1fr);gap:var(--e3);padding:var(--e4);border:1px solid rgb(180 35 24 / .4);border-radius:var(--raio-c);background:var(--erro-fundo);color:var(--tinta)}
+.er-ic{flex:none;width:24px;height:24px;display:block;color:var(--erro)}
+.er-ic svg{width:100%;height:100%;display:block;fill:currentColor}
+.er-aviso-tx{display:flex;flex-direction:column;gap:4px;min-width:0}
+.er-aviso h3{font-size:16px;font-weight:700;line-height:1.35;color:var(--erro)}
+.er-aviso p{font-size:14px;line-height:1.45;text-wrap:pretty}
+.er-aviso .er-dica{font-size:13px;color:var(--texto-2);margin-top:4px}
+.er-aviso-acoes{display:flex;flex-direction:column;gap:var(--e2);margin-top:var(--e3)}
+.er-aviso-acoes .btn{width:100%;min-width:0;min-height:48px;font-size:15px;padding-inline:var(--e4)}
+.er-aviso-acoes .btn svg{width:22px;height:22px;flex:none}
+
+/* celular: ícone na linha do título; texto e botões usam a largura toda (o botão do Pix cabe numa linha até em 320 px) */
+@media (max-width:599px){
+  .er-aviso{column-gap:10px;row-gap:0}
+  .er-aviso-tx{display:contents}
+  .er-aviso h3{grid-column:2;align-self:center}
+  .er-aviso-tx>:not(h3){grid-column:1/-1}
+  .er-aviso-tx>p:not(.er-dica){margin-top:6px}
+}
+@media (min-width:600px){
+  .er-aviso-acoes{flex-direction:row;flex-wrap:wrap}
+  .er-aviso-acoes .btn{width:auto;flex:1 1 auto;align-self:auto}
+}
+
+@media (prefers-reduced-motion:no-preference){
+  .er-entra{animation:er-sobe .26s var(--ease) both}
+}
+@keyframes er-sobe{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}

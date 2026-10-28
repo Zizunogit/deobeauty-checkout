@@ -1,0 +1,193 @@
+/* DeoBeauty · Checkout rápido · v3 · módulo SACOLA (prefixo gv-)
+   Pele da v2: branco é o balcão, creme é a sacola, rosa é a ação, blush é a escolha, tinta é o texto.
+   - A sacola é creme; os itens ficam nela em linhas curtas, com a foto num ladrilho branco (o mesmo do resumo do checkout).
+   - A meta de frete grátis e a sugestão da mesma linha moram juntas num cartão branco: é o balcão da loja
+     ("faltam R$ 49,20" → "completa os R$ 199"), não o que já está na sacola.
+   - Rodapé fixo: subtotal, parcelas, "Finalizar compra" (rosa), a nota e "Continuar comprando".
+   Playfair só no título "Sua sacola"; DM Sans no resto. Sombra só no que flutua (a sacola e o ícone por cima do véu). */
+
+/* ---------- cena: a loja por trás da sacola (html[data-tela="loja"]) ---------- */
+html.gv-pre .topo,html.gv-pre .corpo{visibility:hidden} /* só até o deo:pronto: o checkout não pisca antes da loja */
+html[data-tela="loja"],html[data-tela="loja"] body{overflow:hidden}
+html[data-tela="loja"] .topo,html[data-tela="loja"] .corpo,html[data-tela="loja"] .veu{display:none}
+html[data-tela="loja"] .loja-fundo{display:block;position:fixed;inset:0;z-index:0;overflow:hidden;background:var(--fundo)}
+html[data-tela="loja"] .lf-barra{display:grid;place-items:center;height:44px;padding:0 16px;background:var(--tinta);color:var(--blush);font-size:13px;text-align:center}
+html[data-tela="loja"] .lf-topo{display:flex;align-items:center;gap:28px;height:64px;padding:0 72px 0 16px;border-bottom:1px solid var(--borda)}
+html[data-tela="loja"] .lf-topo img{width:112px}
+html[data-tela="loja"] .lf-topo span{display:none;font-size:15px;font-weight:500}
+html[data-tela="loja"] .lf-grade{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:16px}
+html[data-tela="loja"] .lf-card{display:flex;flex-direction:column;gap:8px;padding:12px;border:1px solid var(--borda);border-radius:var(--raio)}
+html[data-tela="loja"] .lf-card img{aspect-ratio:1;object-fit:contain}
+html[data-tela="loja"] .lf-card i{display:block;height:10px;border-radius:5px;background:var(--borda)}
+html[data-tela="loja"] .lf-card i:nth-of-type(2){width:60%}
+@media (min-width:600px){
+  html[data-tela="loja"] .lf-topo{padding:0 88px 0 24px}
+  html[data-tela="loja"] .lf-topo img{width:120px}
+  html[data-tela="loja"] .lf-topo span{display:inline}
+  html[data-tela="loja"] .lf-grade{grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;max-width:1120px;margin:0 auto;padding:24px}
+  html[data-tela="loja"] .lf-card{padding:16px}
+}
+
+/* ---------- ícone da sacola no topo da loja, com o contador ---------- */
+.gv-icone{display:none}
+html[data-tela="loja"] .gv-icone{display:grid;place-items:center;position:fixed;z-index:2;top:52px;right:8px;width:48px;height:48px;padding:0;border:0;border-radius:50%;background:var(--fundo);color:var(--tinta)}
+.gv-icone>svg{width:26px;height:26px}
+.gv-icone:hover{background:var(--creme)}
+.gv-conta{position:absolute;top:3px;right:1px;min-width:20px;height:20px;padding:0 5px;border-radius:10px;background:var(--rose);color:#fff;font-size:12px;font-weight:700;line-height:20px;text-align:center}
+.gv-conta:empty{display:none}
+@media (min-width:600px){
+  html[data-tela="loja"] .gv-icone{right:16px}
+  /* sacola aberta: o ícone fica por cima do véu, "apertado" em blush, e o painel sai dele.
+     Ele está inerte nessa hora, então o clique nele cai no véu e fecha a sacola. */
+  html[data-tela="loja"].gv-aberta .gv-icone{z-index:22;background:var(--blush)}
+}
+
+/* ---------- véu e sacola ---------- */
+.gv-veu,.gv-sacola{display:none}
+html[data-tela="loja"] .gv-veu:not([hidden]){display:block;position:fixed;inset:0;z-index:20;background:rgb(26 20 22 / .45)}
+html[data-tela="loja"] .gv-sacola:not([hidden]){display:flex}
+html:not(.gv-aberta) .gv-veu{opacity:0}
+.gv-sacola{--gv-pad:16px;position:fixed;z-index:21;flex-direction:column;min-height:0;background:var(--creme);color:var(--tinta);font-size:15px;line-height:1.45;box-shadow:var(--sombra)}
+.gv-sacola p,.gv-sacola h2,.gv-sacola h3{margin:0}
+.gv-sacola ul{list-style:none;margin:0;padding:0}
+.gv-sacola [hidden]{display:none}
+.gv-sacola .btn{width:100%;min-width:0;align-self:stretch}
+
+/* celular: sobe do rodapé; em cima, a loja continua à vista (faixa, logo e o ícone da sacola) */
+.gv-sacola{left:0;right:0;bottom:0;max-height:calc(100dvh - 100px);border-radius:var(--raio) var(--raio) 0 0;transform:translateY(100%)}
+html.gv-aberta .gv-sacola{transform:none}
+
+/* cabeçalho: "Sua sacola · 2 itens" */
+.gv-cab{flex:none;display:flex;align-items:baseline;gap:8px;padding:12px 6px 10px var(--gv-pad);border-bottom:1px solid var(--borda)}
+.gv-cab h2{font-family:var(--f-titulo);font-weight:400;font-size:24px;line-height:1.2;letter-spacing:-.01em}
+.gv-cab-n{font-size:14px;color:var(--texto-2);white-space:nowrap}
+.gv-fechar{align-self:center;flex:none;margin-left:auto;width:48px;height:48px;display:grid;place-items:center;padding:0;border:0;border-radius:50%;background:none;color:var(--tinta)}
+.gv-fechar svg{width:22px;height:22px;fill:currentColor}
+.gv-fechar:hover{background:rgb(26 20 22 / .06)}
+
+/* área que rola entre o cabeçalho e o rodapé */
+.gv-rola{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:0 var(--gv-pad)}
+
+/* ---------- itens: linhas curtas (estrutura da opção C) ---------- */
+.gv-item{position:relative;display:grid;grid-template-columns:64px minmax(0,1fr) auto;grid-template-areas:"foto info preco" "foto info qtd";column-gap:12px;row-gap:8px;align-items:start;padding:14px 0;border-bottom:1px solid var(--borda)}
+/* foto no ladrilho branco, como no resumo do checkout: a pessoa reconhece o item quando chega lá */
+.gv-foto{grid-area:foto;display:block;width:64px;height:64px;border:1px solid var(--borda);border-radius:var(--raio-c);background:var(--fundo);overflow:hidden}
+.gv-foto img{width:100%;height:100%;object-fit:cover}
+.gv-info{grid-area:info;min-width:0;display:flex;flex-direction:column;gap:1px;padding-top:1px}
+.gv-nome{font-size:15px;font-weight:700;line-height:1.3}
+.gv-tipo{font-size:13px;color:var(--texto-2);line-height:1.35}
+/* família olfativa: pontinho dourado + nome (o leitor de tela ouve "Família olfativa: …") */
+.gv-fam{display:inline-flex;align-items:center;gap:6px;margin-top:3px;font-size:12px;font-weight:500;color:var(--tinta)}
+.gv-fam::before{content:"";flex:none;width:6px;height:6px;border-radius:50%;background:var(--dourado)}
+.gv-preco{grid-area:preco;text-align:right;white-space:nowrap;line-height:1.3}
+.gv-preco-v{display:block;font-size:15px;font-weight:700}
+.gv-cada{display:block;font-size:12px;color:var(--texto-2)}
+/* − / lixeira, quantidade e + num só controle; toque de 48 × 44 px em cada botão */
+.gv-qtd{grid-area:qtd;align-self:end;justify-self:end;display:inline-flex;align-items:center;height:40px;border:1px solid var(--borda-forte);border-radius:var(--raio-p);background:var(--fundo)}
+.gv-qtd button{position:relative;width:40px;height:38px;display:grid;place-items:center;padding:0;border:0;border-radius:50%;background:none;color:var(--tinta)}
+.gv-qtd button::after{content:"";position:absolute;inset:-5px -2px}
+.gv-qtd button svg{width:16px;height:16px;fill:currentColor}
+.gv-qtd .gv-lixo svg{width:18px;height:18px;fill:none}
+.gv-qtd button:hover:not([aria-disabled="true"]){background:var(--creme)}
+.gv-qtd button[aria-disabled="true"]{color:var(--apagado);cursor:not-allowed}
+.gv-q{min-width:22px;text-align:center;font-size:15px;font-weight:700}
+/* item que saiu: linha curta com Desfazer, no mesmo lugar */
+.gv-saiu{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:72px;padding:8px 0;font-size:14px;color:var(--texto-2)}
+.gv-link{display:inline-flex;align-items:center;min-height:48px;padding:0 6px;border:0;border-radius:var(--raio-c);background:none;font-size:14px;font-weight:700;color:var(--tinta);text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
+/* sacola vazia */
+.gv-vazia{display:flex;flex-direction:column;align-items:center;gap:6px;padding:40px 8px 32px;text-align:center;color:var(--texto-2)}
+.gv-vazia p{text-wrap:balance}
+.gv-vazia-t{font-size:18px;font-weight:700;color:var(--tinta)}
+.gv-sacola .gv-vazia .btn{width:auto;min-width:220px;align-self:center;margin-top:16px}
+
+/* ---------- balcão: meta de frete grátis + sugestão da mesma linha, num cartão branco ---------- */
+.gv-extra{margin:16px 0 20px;padding:16px 14px 2px;border-radius:var(--raio);background:var(--fundo)}
+/* meta: regra da loja, sem CEP e sem prometer; o trilho cresce em até 450 ms */
+.gv-meta{display:flex;flex-direction:column;gap:8px;padding-bottom:14px}
+.gv-meta-tx{display:flex;align-items:center;gap:10px;font-size:15px;line-height:1.35}
+.gv-meta-tx>svg{flex:none;width:22px;height:22px;color:var(--tinta)}
+.gv-meta-tx b{font-weight:700}
+.gv-meta.gv-ok .gv-meta-tx>svg{width:20px;height:20px;fill:var(--ok)}
+.gv-trilho{display:block;height:6px;border-radius:3px;background:var(--borda);overflow:hidden}
+.gv-trilho i{display:block;height:100%;border-radius:3px;background:var(--tinta);transform-origin:left;transform:scaleX(0)}
+.gv-meta.gv-ok .gv-trilho i{background:var(--ok)}
+.gv-meta-onde{font-size:12.5px;line-height:1.45;color:var(--texto-2)}
+/* sugestão: sem pressa, "só se você quiser" */
+.gv-sug{padding-top:14px;border-top:1px solid var(--borda)}
+.gv-sug h3{font-size:15px;font-weight:700;line-height:1.3;text-wrap:balance}
+.gv-sug-sub{margin-top:2px;font-size:13px;color:var(--texto-2)}
+.gv-sugs{margin-top:10px}
+.gv-s{display:grid;grid-template-columns:56px minmax(0,1fr) auto;grid-template-areas:"foto info botao";column-gap:12px;align-items:center;padding:12px 0;border-top:1px solid var(--borda)}
+.gv-s-foto{grid-area:foto;align-self:start;display:block;width:56px;height:56px;border-radius:var(--raio-c);overflow:hidden;background:#F0EAE5} /* o mesmo bege do fundo das fotos */
+.gv-s-foto img{width:100%;height:100%;object-fit:cover}
+.gv-s-info{grid-area:info;min-width:0;display:flex;flex-direction:column;align-items:flex-start;font-size:14px;line-height:1.35}
+.gv-s-info b{font-weight:700}
+.gv-s-info>span{font-size:13px;color:var(--texto-2)}
+.gv-s-v{color:var(--tinta);font-weight:700}
+/* selo "Completa os R$ 199": blush é a escolha */
+.gv-completa{display:inline-flex;align-items:center;height:22px;margin-top:6px;padding:0 8px;border-radius:var(--raio-p);background:var(--blush);color:var(--rose-h);font-size:11px;font-weight:700;letter-spacing:.02em;white-space:nowrap}
+.gv-add{grid-area:botao;position:relative;display:inline-flex;align-items:center;justify-content:center;height:44px;padding:0 16px;border:1px solid var(--tinta);border-radius:var(--raio-p);background:var(--fundo);color:var(--tinta);font-size:14px;font-weight:700}
+.gv-add::after{content:"";position:absolute;inset:-2px} /* toque de 48 px */
+.gv-add:hover{background:var(--tinta);color:#fff}
+
+/* ---------- rodapé fixo: conta, botão, nota e "Continuar comprando" ---------- */
+.gv-pe{flex:none;display:flex;flex-direction:column;padding:12px var(--gv-pad) calc(4px + env(safe-area-inset-bottom,0px));background:var(--creme);border-top:1px solid var(--borda)}
+.gv-desc{font-size:13px;color:var(--ok);font-weight:500;text-align:right}
+.gv-sub{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.gv-sub>span{font-size:15px;font-weight:700}
+.gv-sub>b{font-size:22px;font-weight:700;line-height:1.25}
+.gv-parc{font-size:13px;color:var(--texto-2);text-align:right}
+.gv-ir{margin-top:10px}
+.gv-nota{margin-top:8px;font-size:12.5px;color:var(--texto-2);text-align:center}
+.gv-seguir{align-self:center;margin-top:-2px}
+/* selos discretos: no celular no fim da lista (o rodapé não cresce); no painel, no rodapé */
+.gv-fim{padding:0 0 20px}
+.gv-selos{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 16px;font-size:12px;color:var(--texto-2)}
+.gv-selos li{display:flex;align-items:center;gap:6px}
+.gv-selos svg{flex:none;width:15px;height:15px;fill:currentColor}
+.gv-selos b{color:var(--tinta);font-weight:700}
+.gv-selos-pe{display:none}
+
+/* celular estreito (320): foto menor e, na sugestão, o botão desce para baixo do nome (nome e selo não espremem) */
+@media (max-width:359px){
+  .gv-cab h2{font-size:22px}
+  .gv-item{grid-template-columns:52px minmax(0,1fr) auto;column-gap:10px}
+  .gv-foto{width:52px;height:52px}
+  .gv-s{grid-template-columns:48px minmax(0,1fr);grid-template-areas:"foto info" "foto botao";column-gap:10px;row-gap:8px}
+  .gv-s-foto{width:48px;height:48px}
+  .gv-add{justify-self:start}
+}
+
+/* ---------- tablet e computador: painel preso ao ícone da sacola ---------- */
+@media (min-width:600px){
+  .gv-sacola{--gv-pad:20px;left:auto;right:16px;bottom:auto;top:108px;width:min(420px,calc(100vw - 32px));max-height:calc(100dvh - 124px);border-radius:var(--raio);transform:none}
+  html:not(.gv-aberta) .gv-sacola{opacity:0;transform:translateY(-8px)}
+  /* bico apontando para o ícone (centro do ícone a 40 px da borda direita da tela) */
+  .gv-sacola::before{content:"";position:absolute;top:-6px;right:17px;width:14px;height:14px;border-radius:3px 0 0 0;background:var(--creme);transform:rotate(45deg)}
+  .gv-cab{padding:14px 10px 12px var(--gv-pad)}
+  html[data-tela="loja"] .gv-veu:not([hidden]){background:rgb(26 20 22 / .28)}
+  .gv-pe{padding-bottom:12px;border-radius:0 0 var(--raio) var(--raio)}
+  .gv-fim{display:none}
+  .gv-selos-pe{display:flex;margin-top:4px}
+}
+
+/* ---------- movimento: só transform e opacity, e só sem "reduzir movimento" ---------- */
+@media (prefers-reduced-motion:no-preference){
+  /* celular: sobe do rodapé em 300 ms */
+  .gv-sacola{transition:transform .3s var(--ease)}
+  .gv-veu{transition:opacity .3s var(--ease)}
+  /* meta: o trilho cresce em 420 ms */
+  .gv-trilho i{transition:transform .42s var(--ease)}
+  /* item que acabou de entrar: chega de 8 px e um brilho blush se apaga */
+  .gv-entra{animation:gv-entra .28s var(--ease) both}
+  .gv-entra::before{content:"";position:absolute;z-index:-1;inset:0 calc(-1 * var(--gv-pad));background:var(--blush);opacity:0;animation:gv-brilho .45s ease-out}
+  /* abertura da página: a sacola já está lá, sem entrar */
+  html.gv-sem-mov .gv-sacola,html.gv-sem-mov .gv-veu,html.gv-sem-mov .gv-trilho i{transition:none}
+}
+@media (prefers-reduced-motion:no-preference) and (min-width:600px){
+  /* painel: aparece de 8 px acima em 200 ms */
+  .gv-sacola{transition:transform .2s var(--ease),opacity .2s var(--ease)}
+  .gv-veu{transition:opacity .2s var(--ease)}
+}
+@keyframes gv-entra{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes gv-brilho{from{opacity:1}to{opacity:0}}

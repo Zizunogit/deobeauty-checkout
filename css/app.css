@@ -1,0 +1,380 @@
+/* DeoBeauty · Checkout rápido · v2 (Rodada 1 aplicada)
+   Direção: a loja continua na tela. Branco é o balcão, creme é a sacola, rosa é a ação, tinta é o texto e a seleção.
+   Playfair Display só em títulos; DM Sans em tudo que se lê e se toca. Sem degradê, sombra só no que flutua.
+   v2: campos compactos com rótulo dentro (r1-d4 C), escolha em blush, resumo que acompanha no rodapé do celular
+   (r1-d5 C, com fundo creme), carteira digital na etapa 3 (r1-d6 C), etapa que vira linha de resumo (r1-d7 B). */
+:root{
+  color-scheme:light;
+  --tinta:#1A1416;
+  --rose:#A8325A;
+  --rose-h:#8C2549;
+  --blush:#F3DDE3;
+  --creme:#F8F3EF;
+  --borda:#EADFDB;
+  --texto-2:#6E6266;
+  --dourado:#B08A4A;
+  --fundo:#FFFFFF;
+  --ok:#2E7D4F;
+  --erro:#B42318;
+  --erro-fundo:#FDF1F0;
+  --borda-forte:#968A8E; /* borda dos campos e opções: 3,3:1 no branco, 3:1 no creme (q8) */
+  --apagado:#A2969A;     /* rótulo de campo desligado */
+
+  --f-titulo:"Playfair Display",Georgia,"Times New Roman",serif;
+  --f-texto:"DM Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+
+  --e1:4px;--e2:8px;--e3:12px;--e4:16px;--e5:24px;--e6:40px;
+  --raio:16px;--raio-c:12px;--raio-p:999px;--toque:48px;--campo:56px;
+  --sombra:0 4px 20px rgb(0 0 0 / .12);
+  --ease:cubic-bezier(.2,.7,.2,1);
+  --dur:.24s;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-padding-top:16px}
+body{margin:0;background:var(--fundo);color:var(--tinta);font-family:var(--f-texto);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--fundo)}
+h1,h2,h3,p{margin:0}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:inherit}
+img{max-width:100%;display:block}
+:focus-visible{outline:2px solid var(--rose);outline-offset:2px}
+/* títulos recebem o foco ao trocar de etapa só para o leitor de tela: sem contorno (q14) */
+[tabindex="-1"]:focus{outline:none}
+.vh{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.num{font-variant-numeric:lining-nums tabular-nums}
+.nq{white-space:nowrap}
+.dg{display:inline-block;width:.62em;text-align:center}
+
+/* ---------- topo ---------- */
+.topo{border-bottom:1px solid var(--borda);background:var(--fundo)}
+.topo-in{max-width:1120px;margin:0 auto;display:flex;align-items:center;gap:var(--e4);min-height:64px;padding-block:var(--e3);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.logo{display:block;width:120px;height:auto}
+.topo-seg{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:13px;color:var(--texto-2)}
+.topo-seg svg{width:16px;height:16px;flex:none}
+.topo-volta{font-size:13px;color:var(--texto-2);text-decoration:underline;text-underline-offset:3px;display:none}
+
+/* ---------- corpo ---------- */
+.corpo{max-width:1120px;margin:0 auto;display:grid;grid-template-columns:1fr;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.fluxo{min-width:0;padding-block:var(--e4) 0}
+
+/* progresso */
+.progresso{margin:var(--e5) 0 var(--e4)}
+.prog-lista{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.prog-item{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--texto-2);font-weight:500;letter-spacing:.02em}
+.prog-item::before{content:"";display:block;height:4px;border-radius:2px;background:var(--borda);transition:background var(--dur) var(--ease)}
+.prog-item.feito{color:var(--tinta)}
+.prog-item.feito::before{background:var(--tinta)}
+.prog-item.atual{color:var(--rose);font-weight:700}
+.prog-item.atual::before{background:var(--rose)}
+
+/* ---------- etapas ---------- */
+/* o formulário é a referência da cópia que sai na troca de etapa (r1-d7 B) */
+.form{position:relative;display:flex;flex-direction:column;gap:var(--e4);padding-bottom:var(--e6)}
+.etapa{display:flex;flex-direction:column;gap:var(--e4)}
+.etapa[hidden]{display:none}
+.etapa-cab{display:flex;flex-direction:column;gap:6px}
+.etapa-num{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--texto-2)}
+.etapa-cab h2{font-family:var(--f-titulo);font-weight:400;font-size:28px;line-height:1.15;letter-spacing:-.01em;text-wrap:balance}
+.etapa-sub{font-size:15px;color:var(--texto-2)}
+.etapa-corpo{display:flex;flex-direction:column;gap:var(--e4)}
+.etapa-acoes{display:flex;flex-direction:column;gap:var(--e3);padding-top:var(--e2)}
+
+/* etapa concluída: linha de resumo editável (fica por cima da cópia que entra nela) */
+.feita{position:relative;z-index:2;display:flex;align-items:center;gap:var(--e3);padding:var(--e2) var(--e2) var(--e2) var(--e4);border:1px solid var(--borda);border-radius:var(--raio-c);background:var(--fundo)}
+.feita[hidden]{display:none}
+.feita-ic{flex:none;width:24px;height:24px;border-radius:50%;background:var(--tinta);display:grid;place-items:center;align-self:flex-start;margin-top:6px}
+.feita-ic svg{width:14px;height:14px;fill:#fff}
+.feita-tx{flex:1;min-width:0;font-size:14px;line-height:1.45;padding-block:4px}
+.feita-tx b{display:block;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--texto-2);margin-bottom:2px}
+.feita-tx>span{display:block;overflow-wrap:anywhere}
+.feita-alt{flex:none;align-self:flex-start;display:inline-flex;align-items:center;min-height:44px;padding:0 var(--e2);background:none;border:0;font-size:14px;font-weight:500;text-decoration:underline;text-underline-offset:3px}
+
+/* ---------- campos (r1-d4 C: campo compacto com rótulo dentro) ---------- */
+.campo{display:flex;flex-direction:column;gap:6px;min-width:0}
+.campo label,.rot{font-size:14px;font-weight:700}
+.rot-op{font-weight:400;color:var(--texto-2)}
+.entrada{width:100%;height:var(--toque);padding:0 16px;border:1px solid var(--borda-forte);border-radius:var(--raio-c);background-color:var(--fundo);font-size:16px;outline:none;transition:border-color .15s,box-shadow .15s;appearance:none;-webkit-appearance:none}
+.entrada:hover{border-color:var(--texto-2)}
+/* foco: borda tinta mais grossa + halo blush */
+.entrada:focus{border-color:var(--tinta);box-shadow:inset 0 0 0 1px var(--tinta),0 0 0 4px var(--blush)}
+/* erro: borda vermelha + fundo rosado; com foco, borda grossa e halo continuam aparecendo (q5) */
+.entrada[aria-invalid="true"]{border-color:var(--erro);background-color:var(--erro-fundo)}
+.entrada[aria-invalid="true"]:focus{box-shadow:inset 0 0 0 1px var(--erro),0 0 0 4px var(--blush);background-color:var(--fundo)}
+.entrada:disabled{background-color:var(--creme);border-color:var(--borda);color:var(--texto-2);cursor:not-allowed}
+select.entrada{padding-right:44px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231A1416' stroke-width='1.6'/%3E%3C/svg%3E");background-position:right 16px center;background-repeat:no-repeat}
+/* rótulo dentro do campo: fica no meio quando vazio e sobe ao digitar */
+.flut{position:relative;min-width:0}
+.flut>.entrada{height:var(--campo);padding:24px 16px 6px;line-height:22px}
+.flut>label{position:absolute;left:17px;top:17px;margin:0;font-size:16px;line-height:22px;font-weight:400;color:var(--texto-2);pointer-events:none;transform-origin:0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:calc(100% - 34px)}
+.flut>.entrada:not(:placeholder-shown)+label,
+.flut>.entrada:focus+label,
+.flut>.entrada:-webkit-autofill+label,
+.flut-lista>label{transform:translateY(-10px) scale(.75);font-weight:500}
+.flut>.entrada:focus+label{color:var(--tinta)}
+.flut>.entrada[aria-invalid="true"]+label{color:var(--erro)}
+.flut>.entrada:disabled+label{color:var(--apagado)}
+.flut-lista>select.entrada{padding-right:44px}
+.ajuda{font-size:13px;color:var(--texto-2)}
+.erro{font-size:13px;color:var(--erro);font-weight:500;display:flex;gap:6px;align-items:flex-start}
+.erro[hidden]{display:none}
+.erro::before{content:"";flex:none;width:14px;height:14px;margin-top:3px;border-radius:50%;background:var(--erro);-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M7 0a7 7 0 1 1 0 14A7 7 0 0 1 7 0Zm-1 3v5h2V3Zm0 6v2h2V9Z'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M7 0a7 7 0 1 1 0 14A7 7 0 0 1 7 0Zm-1 3v5h2V3Zm0 6v2h2V9Z'/%3E%3C/svg%3E") center/contain no-repeat}
+.dica-ok{font-size:13px;color:var(--ok);font-weight:500;display:flex;gap:6px;align-items:center}
+.dica-ok[hidden]{display:none}
+.dica-ok svg{width:14px;height:14px;fill:currentColor;flex:none}
+.linha{display:grid;grid-template-columns:1fr 1fr;gap:var(--e3)}
+.linha-num{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--e3);align-items:center}
+.marca{display:inline-flex;align-items:center;gap:10px;min-height:var(--toque);font-size:14px;cursor:pointer}
+.linha-num .marca{white-space:nowrap}
+.marca input{flex:none;width:20px;height:20px;margin:0;accent-color:var(--rose-h)}
+.cab-campo{display:flex;justify-content:space-between;align-items:center;gap:var(--e3)}
+/* links e botões de texto com área de toque de 44 px (q9) */
+.link{display:inline-flex;align-items:center;align-self:flex-start;min-height:44px;background:none;border:0;padding:0;font-size:14px;font-weight:500;text-decoration:underline;text-underline-offset:3px;color:var(--tinta)}
+.campo>.link{margin-top:-6px}
+.cab-campo+.ajuda{margin-top:-8px}
+
+/* endereço encontrado */
+.endereco{display:flex;gap:var(--e3);padding:var(--e4);border-radius:var(--raio-c);background:var(--creme);font-size:15px;line-height:1.45}
+.endereco[hidden]{display:none}
+.endereco svg{width:20px;height:20px;flex:none;margin-top:2px;fill:var(--tinta)}
+.endereco b{display:block}
+.endereco span{color:var(--texto-2)}
+.manual{display:flex;flex-direction:column;gap:var(--e4)}
+.manual[hidden]{display:none}
+.carregando{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--texto-2)}
+.carregando[hidden]{display:none}
+.carregando i{width:16px;height:16px;border-radius:50%;border:2px solid var(--borda);border-top-color:var(--tinta)}
+@keyframes gira{to{transform:rotate(360deg)}}
+
+/* opções (frete, pagamento): escolhida em blush com borda rosa escura (r1-d4 C) */
+.opcoes{display:flex;flex-direction:column;gap:var(--e2);border:0;margin:0;padding:0;min-width:0}
+.opcoes legend{font-size:14px;font-weight:700;padding:0;margin-bottom:var(--e2)}
+.opcao{display:grid;grid-template-columns:20px 1fr auto;column-gap:var(--e3);align-items:center;min-height:64px;padding:var(--e3) var(--e4);border:1px solid var(--borda-forte);border-radius:var(--raio-c);background:var(--fundo);cursor:pointer;transition:border-color .15s,background-color .15s}
+.opcao[hidden]{display:none}
+.opcao:hover{border-color:var(--texto-2)}
+.opcao input{grid-row:1/span 2;width:20px;height:20px;margin:0;accent-color:var(--rose-h)}
+.opcao-t{font-weight:700;font-size:15px;display:flex;align-items:center;gap:8px;min-width:0}
+.opcao-t>span{min-width:0}
+.opcao-d{grid-column:2;font-size:13px;color:var(--texto-2)}
+.opcao-v{grid-row:1/span 2;grid-column:3;font-weight:700;font-size:15px;text-align:right}
+.opcao:has(input:checked){background:var(--blush);border-color:var(--rose-h)}
+.opcao:has(input:checked) .opcao-d{color:var(--tinta)}
+.opcao:has(input:checked) .selo{background:var(--fundo)}
+.opcao:has(input:focus-visible){outline:2px solid var(--rose);outline-offset:2px}
+.selo{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:var(--raio-p);background:var(--blush);color:var(--rose-h);font-size:11px;font-weight:700;letter-spacing:.04em}
+
+/* pagamento */
+.pag-ic{width:28px;height:28px;flex:none}
+.cartao{display:flex;flex-direction:column;gap:var(--e4);padding:var(--e4);border-radius:var(--raio-c);background:var(--creme)}
+.cartao[hidden]{display:none}
+.num-cartao{position:relative}
+.num-cartao>.entrada{padding-right:76px}
+.bandeira{position:absolute;right:16px;top:35px;transform:translateY(-50%);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--texto-2);pointer-events:none}
+.fatura{display:flex;flex-direction:column;gap:var(--e4)}
+.fatura[hidden]{display:none}
+.pix-info{display:flex;gap:var(--e3);padding:var(--e4);border-radius:var(--raio-c);background:var(--creme);font-size:14px;color:var(--tinta)}
+.pix-info[hidden]{display:none}
+.pix-info svg{width:20px;height:20px;flex:none;margin-top:2px}
+/* carteira digital (r1-d6 C): marca em texto no lugar do logotipo oficial, que entra no site */
+.marca-cart{display:inline-flex;align-items:center;height:26px;padding:0 10px;border:1px solid #000;border-radius:6px;background:var(--fundo);color:#000;font-size:13px;font-weight:700;letter-spacing:.01em}
+
+/* botões */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--e2);min-height:52px;padding:8px var(--e5);line-height:1.25;text-align:center;border-radius:var(--raio-p);border:1px solid transparent;font-size:16px;font-weight:700;width:100%;transition:background .15s,border-color .15s,transform .15s}
+.btn[hidden]{display:none}
+.btn-pri{background:var(--rose);color:#fff}
+.btn-pri:hover{background:var(--rose-h)}
+.btn-pri:active{transform:scale(.99)}
+.btn-pri svg{width:18px;height:18px;fill:currentColor}
+.btn-sec{background:var(--fundo);border-color:var(--tinta);color:var(--tinta)}
+.btn-sec:hover{background:var(--tinta);color:#fff}
+.btn[aria-busy="true"]{cursor:progress;opacity:.8}
+/* botão da carteira: preto e texto branco, como pedem Apple e Google (o real é desenhado por eles) */
+.xp-btn{display:flex;align-items:center;justify-content:center;gap:.28em;width:100%;height:52px;padding:0 var(--e5);border:0;border-radius:var(--raio-p);background:#000;color:#fff;font-size:16px;font-weight:500;letter-spacing:.005em}
+.xp-btn[hidden]{display:none}
+.xp-btn b{font-weight:700}
+.xp-btn:active{transform:scale(.99)}
+.seguro{display:flex;align-items:center;justify-content:center;gap:6px;font-size:13px;color:var(--texto-2);text-align:center}
+.seguro svg{width:14px;height:14px;flex:none}
+
+/* ---------- resumo do pedido (r1-d5 C, com o fundo creme da v1) ---------- */
+.pedido{min-width:0}
+.pedido-in{display:flex;flex-direction:column;gap:0;padding:var(--e5);border-radius:var(--raio);background:var(--creme)}
+.pedido-in>*{padding-block:var(--e4)}
+.pedido-in>*+*{border-top:1px solid var(--borda)}
+.pedido-in>[hidden]{display:none}
+.ped-cab{display:flex;align-items:center;justify-content:space-between;gap:var(--e3);padding-block:0 var(--e4)}
+.pedido h2{font-family:var(--f-titulo);font-weight:400;font-size:22px;line-height:1.2}
+.ped-fechar{display:none;flex:none;width:44px;height:44px;margin:-6px -10px -6px 0;border:0;border-radius:50%;background:none;place-items:center}
+.ped-fechar svg{width:20px;height:20px}
+.itens{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--e3)}
+.pedido-in>.itens{padding-block:var(--e4)}
+.item{display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:var(--e3);align-items:center}
+.item-img{position:relative;width:56px;height:56px;border-radius:10px;background:var(--fundo);border:1px solid var(--borda)}
+.item-img img{width:100%;height:100%;object-fit:contain;border-radius:10px}
+.item-q{position:absolute;top:-6px;right:-6px;min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:var(--tinta);color:#fff;font-size:12px;font-weight:700;display:grid;place-items:center}
+.item-n{font-size:14px;line-height:1.35;min-width:0}
+.item-n small{display:block;font-size:12px;color:var(--texto-2)}
+.item-v{font-size:14px;font-weight:700;white-space:nowrap}
+.cupom{display:flex;flex-direction:column;align-items:flex-start;gap:var(--e2)}
+.pedido-in>.cupom{padding-block:var(--e2)}
+.cupom>*{max-width:100%}
+.cupom-form,.cupom-ok,.cupom .erro{width:100%}
+.cupom-form{display:grid;grid-template-columns:1fr auto;gap:var(--e2);padding-bottom:var(--e2)}
+.cupom-form[hidden]{display:none}
+.cupom-form .btn{width:auto;min-width:0;min-height:var(--toque);padding:0 var(--e4);font-size:15px}
+.cupom-ok{display:flex;justify-content:space-between;align-items:center;gap:var(--e2);font-size:14px}
+.cupom-ok[hidden]{display:none}
+.cupom .link[hidden]{display:none}
+.tag-cupom{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;border-radius:var(--raio-p);background:var(--blush);color:var(--rose-h);font-weight:700;font-size:13px}
+.contas{display:flex;flex-direction:column;gap:var(--e2);font-size:14px;margin:0}
+.contas div{display:flex;justify-content:space-between;gap:var(--e3)}
+.contas dt{color:var(--texto-2)}
+.contas dd{margin:0;font-weight:500;text-align:right}
+.contas .desc dd{color:var(--ok)}
+.total{display:flex;justify-content:space-between;align-items:baseline;gap:var(--e3)}
+.total>span{font-size:15px;font-weight:700}
+/* total com números alinhados (q10) */
+.total b{font-family:var(--f-texto);font-weight:700;font-size:22px;line-height:1}
+.pedido-in>.parcela{padding-block:4px var(--e4);border-top:0;font-size:13px;color:var(--texto-2);text-align:right}
+.meta-frete{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--tinta)}
+.meta-frete .trilho{height:4px;border-radius:2px;background:var(--borda);overflow:hidden}
+.meta-frete .trilho i{display:block;height:100%;background:var(--tinta);border-radius:2px;transform-origin:left;transition:transform .4s var(--ease)}
+.confianca{list-style:none;margin:0;padding-inline:0;display:flex;flex-direction:column;gap:var(--e2);font-size:13px;color:var(--texto-2)}
+.pedido-in>.confianca{padding-bottom:0}
+.confianca li{display:flex;gap:10px;align-items:center}
+.confianca svg{width:16px;height:16px;flex:none}
+.confianca b{color:var(--tinta);font-weight:700}
+
+/* barra do resumo: a de cima só existe no modo janela; a do rodapé, no celular */
+.resumo-bar{display:none}
+.resumo-pe{display:none}
+.veu{display:none}
+
+/* ---------- celular e tablet: rodapé fixo com o resumo + painel por cima (r1-d5 C) ---------- */
+@media (max-width:1023px){
+  html:not([data-modo="janela"]){scroll-padding-bottom:calc(var(--c-barra,140px) + 16px)}
+  html:not([data-modo="janela"]) .form{padding-bottom:calc(var(--c-barra,140px) + var(--e5))}
+  html:not([data-modo="janela"]) .etapa-acoes{position:fixed;left:0;right:0;bottom:0;z-index:5;gap:var(--e1);margin:0;padding:var(--e1) max(16px,calc((100vw - 640px) / 2)) calc(var(--e3) + env(safe-area-inset-bottom,0px));background:var(--fundo);border-top:1px solid var(--borda);box-shadow:0 -4px 20px rgb(26 20 22 / .08)}
+  html:not([data-modo="janela"]) .resumo-pe{display:flex;align-items:center;gap:var(--e2);width:100%;min-height:var(--toque);padding:0 2px;background:none;border:0;text-align:left}
+  .rb-fotos{display:flex;flex:none;margin-right:2px}
+  .rb-fotos img{width:34px;height:34px;padding:1px;border-radius:8px;background:var(--fundo);border:1px solid var(--borda);object-fit:contain}
+  .rb-fotos img+img{margin-left:-12px}
+  .resumo-pe .rb-tx{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;font-weight:700}
+  .resumo-pe svg{width:18px;height:18px;flex:none;transform:rotate(180deg)}
+  .resumo-pe[aria-expanded="true"] svg{transform:none}
+  .resumo-pe .rb-tot{flex:none;margin-left:auto;font-size:18px;font-weight:700;white-space:nowrap}
+  html:not([data-modo="janela"]) .etapa-acoes .seguro{margin-top:2px}
+
+  /* painel do resumo: sobe do rodapé, passa por trás da barra; fundo creme, como na v1 */
+  html:not([data-modo="janela"]) .pedido{position:fixed;left:0;right:0;bottom:0;z-index:4;max-width:640px;margin:0 auto;background:var(--creme);border-radius:var(--raio) var(--raio) 0 0;box-shadow:var(--sombra);max-height:calc(100dvh - 40px);overflow:auto;overscroll-behavior:contain}
+  html:not([data-modo="janela"]) .pedido.recolhido{transform:translateY(100%);visibility:hidden}
+  html:not([data-modo="janela"]) .pedido-in{border-radius:0;padding:var(--e4) 16px calc(var(--c-barra,140px) + var(--e2))}
+  html:not([data-modo="janela"]) .ped-cab{position:sticky;top:calc(-1 * var(--e4));z-index:1;margin-top:calc(-1 * var(--e4));padding-top:var(--e4);background:var(--creme)}
+  html:not([data-modo="janela"]) .ped-fechar{display:grid}
+  html:not([data-modo="janela"]) .veu:not([hidden]){display:block;position:fixed;inset:0;z-index:3;background:rgb(26 20 22 / .5)}
+  html.resumo-aberto:not([data-modo="janela"]) body{overflow:hidden}
+}
+/* celulares de 320 px: "Resumo" curto (o leitor de tela continua lendo "Resumo do pedido") e botão com 16 px de respiro */
+@media (max-width:359px){
+  .rb-do{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .btn{padding-inline:var(--e3);font-size:15px}
+}
+@media (min-width:600px) and (max-width:1023px){
+  html:not([data-modo="janela"]) .fluxo{width:100%;max-width:640px;margin-inline:auto}
+}
+@media (min-width:1024px){
+  .topo-in{max-width:1096px}
+  .topo-volta{display:inline}
+  .corpo{grid-template-columns:minmax(0,600px) 400px;justify-content:center;gap:64px;align-items:start}
+  .fluxo{grid-column:1;grid-row:1;padding-top:var(--e5);width:100%}
+  .pedido{grid-column:2;grid-row:1;position:sticky;top:var(--e5);margin-top:var(--e5)}
+  .etapa-cab h2{font-size:34px}
+  .btn,.xp-btn{width:auto;min-width:280px;align-self:flex-start}
+  .etapa-acoes .seguro{justify-content:flex-start}
+}
+
+/* ---------- movimento (Motion v1 + r1-d7 B) ---------- */
+@media (prefers-reduced-motion:no-preference){
+  .etapa.entra .etapa-cab,.etapa.entra .etapa-corpo{animation:sobe .32s var(--ease) both}
+  .etapa.entra .etapa-corpo{animation-delay:.05s}
+  .revela{animation:sobe .28s var(--ease) both}
+  .carregando i{animation:gira .8s linear infinite}
+  .flut>label{transition:transform .16s var(--ease),color .16s}
+  .resumo-pe svg{transition:transform var(--dur) var(--ease)}
+  /* painel do resumo: sobe em 280 ms e desce em 220 ms */
+  .pedido{transition:transform .28s var(--ease),visibility 0s linear 0s}
+  .pedido.recolhido{transition:transform .22s var(--ease),visibility 0s linear .22s}
+  /* cópia da etapa que sai e entra na linha de resumo */
+  .d7-fantasma-raiz{position:absolute;left:0;right:0;top:0;height:0;z-index:1;pointer-events:none}
+  .d7-fantasma{position:absolute;left:0;right:0;overflow:hidden}
+  .d7-fantasma.d7-solto{overflow:visible}
+  .d7-fantasma>.etapa-cab,.d7-fantasma>.etapa-corpo{position:absolute;left:0;right:0;top:0;margin:0}
+}
+@keyframes sobe{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+  .pedido-in>*{transition:none}
+  /* o painel do resumo abre direto (sem transição de visibilidade, para o foco entrar na hora) */
+  .pedido,.pedido *{transition-property:none}
+}
+
+/* =================================================================
+   MODO "página única": as três etapas abertas, um botão no fim
+   ================================================================= */
+html[data-modo="pagina"] .etapa[hidden]{display:flex}
+html[data-modo="pagina"] .feita{display:none}
+html[data-modo="pagina"] .etapa{padding-bottom:var(--e5);border-bottom:1px solid var(--borda)}
+html[data-modo="pagina"] .etapa:last-child{border-bottom:0}
+html[data-modo="pagina"] .etapa .etapa-acoes{display:none}
+html[data-modo="pagina"] .etapa:last-child .etapa-acoes{display:flex}
+html[data-modo="pagina"] .etapa-num{color:var(--rose)}
+html[data-modo="pagina"] .etapa-cab h2{font-size:24px}
+html[data-modo="pagina"] .progresso{display:none}
+
+/* =================================================================
+   MODO "janela sobre a loja": o mesmo passo a passo num painel
+   ================================================================= */
+.loja-fundo{display:none}
+html[data-modo="janela"] body{background:#EDE6E2}
+html[data-modo="janela"] .topo{display:none}
+html[data-modo="janela"] .loja-fundo{display:block;position:fixed;inset:0;z-index:0;overflow:hidden;background:var(--fundo)}
+html[data-modo="janela"] .loja-fundo .lf-barra{height:44px;background:var(--tinta);color:var(--blush);font-size:14px;display:grid;place-items:center}
+html[data-modo="janela"] .loja-fundo .lf-topo{height:64px;border-bottom:1px solid var(--borda);display:flex;align-items:center;gap:24px;padding:0 24px}
+html[data-modo="janela"] .loja-fundo .lf-topo img{width:120px}
+html[data-modo="janela"] .loja-fundo .lf-topo span{font-size:15px;font-weight:500}
+html[data-modo="janela"] .loja-fundo .lf-grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px;padding:24px}
+html[data-modo="janela"] .loja-fundo .lf-card{border:1px solid var(--borda);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:8px}
+html[data-modo="janela"] .loja-fundo .lf-card img{aspect-ratio:1;object-fit:contain}
+html[data-modo="janela"] .loja-fundo .lf-card i{display:block;height:10px;border-radius:5px;background:var(--borda)}
+html[data-modo="janela"] .loja-fundo .lf-card i:nth-of-type(2){width:60%}
+html[data-modo="janela"] .loja-fundo::after{content:"";position:absolute;inset:0;background:rgb(26 20 22 / .5)}
+html[data-modo="janela"] .corpo{position:relative;z-index:1;display:flex;flex-direction:column;max-width:560px;margin:32px auto;padding:0 0 8px;background:var(--fundo);border-radius:var(--raio);box-shadow:var(--sombra);overflow:hidden}
+html[data-modo="janela"] .janela-cab{display:flex;order:-2}
+html[data-modo="janela"] .titulo-checkout{display:none}
+html[data-modo="janela"] .fluxo{padding:0 24px;max-width:none}
+html[data-modo="janela"] .pedido{order:-1;position:static;margin:0;padding:0 24px;background:var(--creme);border-bottom:1px solid var(--borda)}
+html[data-modo="janela"] .pedido .resumo-bar{display:flex;align-items:center;gap:var(--e3);margin:0 -24px;width:calc(100% + 48px);min-height:var(--toque);padding:12px 24px;background:var(--creme);border:0;text-align:left}
+html[data-modo="janela"] .resumo-bar .rb-tx{flex:1;font-size:14px;font-weight:500}
+html[data-modo="janela"] .resumo-bar .rb-tx small{display:block;font-size:12px;color:var(--texto-2);font-weight:400}
+html[data-modo="janela"] .resumo-bar .rb-tot{font-weight:700;font-size:16px}
+html[data-modo="janela"] .resumo-bar svg{width:18px;height:18px;flex:none}
+html[data-modo="janela"] .resumo-bar[aria-expanded="true"] svg{transform:rotate(180deg)}
+html[data-modo="janela"] .pedido.recolhido .pedido-in{display:none}
+html[data-modo="janela"] .pedido-in{padding:8px 0 24px;background:none;border-radius:0}
+html[data-modo="janela"] .etapa-cab h2{font-size:26px}
+html[data-modo="janela"] .btn,html[data-modo="janela"] .xp-btn{width:100%;min-width:0}
+html[data-modo="janela"] .etapa-acoes{position:static;margin:0;padding:8px 0 16px;border:0}
+.janela-cab{display:none;align-items:center;gap:12px;padding:16px 24px;border-bottom:1px solid var(--borda)}
+.janela-cab h1{flex:1;font-family:var(--f-titulo);font-weight:400;font-size:20px}
+.janela-cab button{width:44px;height:44px;border-radius:50%;border:0;background:none;display:grid;place-items:center}
+.janela-cab svg{width:20px;height:20px}
+@media (max-width:599px){
+  html[data-modo="janela"] .corpo{margin:24px 0 0;min-height:calc(100vh - 24px);border-radius:var(--raio) var(--raio) 0 0}
+  html[data-modo="janela"] .fluxo,html[data-modo="janela"] .pedido{padding-left:16px;padding-right:16px}
+  html[data-modo="janela"] .pedido .resumo-bar{margin:0 -16px;width:calc(100% + 32px);padding:12px 16px}
+  html[data-modo="janela"] .janela-cab{padding:12px 16px}
+}
+
+/* ---------- lugares reservados para os módulos (sacola, cliente que volta, Pix, recusa…) ---------- */
+.slot{display:flex;flex-direction:column;gap:var(--e4)}
+.slot:empty{display:none}
